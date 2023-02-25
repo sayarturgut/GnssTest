@@ -1,0 +1,171 @@
+#Kuasar*******
+import math
+from matplotlib.widgets import Button
+from pylab import *
+import tkinter as tk
+import numpy as np
+import matplotlib.pyplot as plt
+plt.style.use('ggplot')
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from tkinter import *
+dizi,dizi1,dizi2,x,y,="","","","",""
+deneme="1"
+z,k,i,l,=1,0,0,1
+enlem1=""
+boylamson=0.00
+with open("TARLAs.txt","r") as dosya:
+    if z==1:
+        line1=dosya.readlines()
+        for words in line1:
+            l=l+1
+        l=int(l/2)
+        z=0
+        deneme=deneme*l
+        for words in deneme:
+            x=x+words
+            y=y+words
+        x=list(x)
+        y=list(y)
+        z=0       
+with open("TARLAs.txt","r") as dosya:
+        line1=dosya.read()        
+        cc=line1.split("e")
+        for word in cc:
+            dizi=dizi+word
+        cc=dizi.split("b")
+        for word in cc:
+            dizi1=dizi1+word
+        cc=dizi1.split("\n")
+        for word in cc:
+            veri=float(word)
+            enlem1=cc[0]
+            boylam1=cc[1]
+            boylam1=float(boylam1)
+            enlem1=float(enlem1)
+            enlem1=enlem1*11100000
+            if veri >= 39.00:
+                enlem=veri
+                enlem=enlem*11100000
+                enlemmesafe=enlem-enlem1
+                x[k]=enlemmesafe
+                k=k+1
+            if veri >= 30.48 and veri <=30.55:
+                boylammesafe=math.cos(enlem1)*11100000
+                boylam=veri
+                boylamson=(boylammesafe*boylam)-(boylammesafe*boylam1)
+                #print("Boylam:")
+                #print(boylamson)
+                y[i]=boylamson
+                i=i+1
+def B0f():
+    ax.clear()
+    ax.plot(x,y), ax.grid(True)
+    ax.set_xlabel('$x(cm)$'),ax.set_ylabel('$y(cm)$')
+    ax.set_title('$GPS DATA$')
+    line.draw()
+  
+def Take_input():
+    INPUT = int(inputtxt.get("1.0", "end-1c"))
+    INPUT1 = int(inputtxt1.get("1.0", "end-1c"))
+    INPUT2 = int(inputtxt2.get("1.0", "end-1c"))
+    INPUT3 = int(inputtxt3.get("1.0", "end-1c"))
+    Output1.insert(END,"Deneme")
+    ax.clear()
+    ax.axis([INPUT,INPUT1,INPUT2,INPUT3])
+    ax.plot(x,y), ax.grid(True)
+    ax.set_xlabel('$x(cm)$'),ax.set_ylabel('$y(cm)$')
+    ax.set_title('$GPS DATA$')
+    line.draw()
+def B2f():
+    ax.clear()
+    ax.axis([-10000,10000,-10000,10000])
+    ax.plot(x,y), ax.grid(True)
+    ax.set_xlabel('$x(cm)$'),ax.set_ylabel('$y(cm)$')
+    ax.set_title('$GPS DATA$')
+    line.draw()
+"""def B3f():
+    x = np.linspace(0,10,100)
+    y = np.exp(x)
+    ax.clear()
+    ax.plot(x,y), ax.grid(True)
+    ax.set_xlabel('$x$'),ax.set_ylabel('y(x)')
+    ax.set_title('$y(x) = e^{x}$')
+    line.draw()   
+def B4f():
+    def gaussian(x, mu, sig):
+        return 1./(np.sqrt(2.*np.pi)*sig)*np.exp(-np.power((x - mu)/sig, 2.)/2)
+    x = np.linspace(0,10,100)
+    y = gaussian(x,5,1.3)
+    ax.clear()
+    ax.plot(x,y), ax.grid(True)
+    ax.set_xlabel('$x$'),ax.set_ylabel('y(x)')
+    ax.set_title('$y(x) = Gaussian(x,5,1.3)$')
+    line.draw()"""
+
+#--- kaynak ---
+root = tk.Tk()
+root.geometry('1200x900')
+root.title("Tkinter + Matplotlib") 
+#------------
+
+#-- çerçeve ---
+left_frame = tk.Frame(root)
+left_frame.place(relx=0.03, rely=0.05, relwidth=0.25, relheight=0.9)
+
+right_frame = tk.Frame(root, bg='#C0C0C0', bd=1.5)
+right_frame.place(relx=0.3, rely=0.05, relwidth=0.65, relheight=0.9)
+#-----------------
+RH = 0.19
+#-------------ilk textbox--------------------
+l = Label(text = "X minimum(cm) ")
+l.place(rely=(0.13 + RH*0.54),relx=0.04,anchor=NW)
+inputtxt = Text(left_frame,
+                bg = "light yellow")
+inputtxt.place(rely=(0.13 + RH*0.57),relx=0,relheight=0.05, relwidth=0.4)
+#-------------ikinci textbox--------------------
+l1 = Label(text = "X maximum(cm) ")
+l1.place(rely=(0.13 + RH*0.54),relx=0.19,anchor=NW)
+inputtxt1 = tk.Text(left_frame,
+                bg = "light yellow")
+inputtxt1.place(rely=(0.13 + RH*0.57),relx=0.6,relheight=0.05, relwidth=0.4)
+#-------------üçüncü textbox--------------------
+l2 = Label(root,text = "Y minimum(cm)")
+l2.place(rely=(0.22 + RH*0.54),relx=0.04,anchor=NW)
+inputtxt2 = tk.Text(left_frame,
+                bg = "light yellow")
+inputtxt2.place(rely=(0.23 + RH*0.57),relx=0,relheight=0.05, relwidth=0.4)
+#-------------dördüncü textbox--------------------
+l3 = Label(root,text = "Y maximum(cm) ")
+l3.place(rely=(0.22 + RH*0.54),relx=0.19,anchor=NW)
+inputtxt3 = tk.Text(left_frame,
+                bg = "light yellow")
+inputtxt3.place(rely=(0.23 + RH*0.57),relx=0.6,relheight=0.05, relwidth=0.4)
+#---------------------------------------
+Output1 = tk.Text(left_frame,
+                bg = "light yellow")
+Output1.place(rely= 3*(0.1 + RH*0.54) ,relheight=RH, relwidth=1)
+
+
+#--- ilk buton ---
+B0 = tk.Button(left_frame,text="Plot The Data",command = B0f)
+B0.place(relheight=RH, relwidth=1)
+#--- ikinci buton ---
+B2 = tk.Button(left_frame,text="Set x-y axis",command = Take_input)
+B2.place(rely= 2*(0.1 + RH*0.54) ,relheight=RH, relwidth=1)
+#--- üçüncü buton ---
+"""B3 = tk.Button(left_frame,text="EXP(x)",command = B3f)
+B3.place(rely= 3*(0.1 + RH*0.54) ,relheight=RH, relwidth=1)"""
+#--- dördüncü buton ---
+"""B4 = tk.Button(left_frame,text="Gaussian(x)",command = B4f)
+B4.place(rely= 4*(0.1 + RH*0.54) ,relheight=RH, relwidth=1)"""
+#------------
+
+#--- şekil ekleme ---
+figure = plt.Figure(figsize=(5,6), dpi=100)
+ax = figure.add_subplot(111)
+ax.grid(True),ax.set_xlabel('$x$'),ax.set_ylabel('$y(x)$')
+line = FigureCanvasTkAgg(figure, right_frame)
+line.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH,expand=1)
+#----------------------
+
+root.mainloop()
