@@ -1,33 +1,73 @@
-#Kuasar*******
-import math
-from matplotlib.widgets import Button
-from pylab import *
-import tkinter as tk
-import numpy as np
-import matplotlib.pyplot as plt
-plt.style.use('ggplot')
+#Kuasar---------------
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backend_bases import MouseButton
+from matplotlib.widgets import Button
+import matplotlib.pyplot as plt
+import tkinter as tk
 from tkinter import *
-dizi,dizi1,dizi2,x,y,="","","","",""
-deneme="1"
-z,k,i,l,=1,0,0,1
-enlem1=""
-boylamson=0.00
-with open("TARLAs.txt","r") as dosya:
-    if z==1:
-        line1=dosya.readlines()
-        for words in line1:
-            l=l+1
-        l=int(l/2)
-        z=0
-        deneme=deneme*l
-        for words in deneme:
-            x=x+words
-            y=y+words
-        x=list(x)
-        y=list(y)
-        z=0       
-with open("TARLAs.txt","r") as dosya:
+import numpy as np
+import math
+import time
+plt.style.use('ggplot')
+def mouse_event(event):
+   inputtxt.delete("1.0",END)
+   inputtxt1.delete("1.0",END)
+   inputtxt2.delete("1.0",END)
+   inputtxt3.delete("1.0",END)
+   Output1.delete("1.0",END)
+   Output1.insert(END,'x:{}\ny:{}'.format(event.xdata, event.ydata))
+   xdat=event.xdata
+   ydat=event.ydata
+   interval=int(intervaltxt.get("1.0", "end-1c"))
+   if(interval!=0):
+       ax.clear()
+       ax.plot(x,y, color="red",linestyle="dashed",marker="o"), ax.grid(True)
+       ax.axis([xdat-interval,xdat+interval,ydat-interval,ydat+interval])
+       ax.set_xlabel('$x(cm)$'),ax.set_ylabel('$y(cm)$')
+       ax.set_title('$GPS DATA$')
+       inputtxt.insert(END,int(xdat-interval))
+       inputtxt1.insert(END,int(xdat+interval))
+       inputtxt2.insert(END,int(ydat-interval))
+       inputtxt3.insert(END,int(ydat+interval))
+       line.draw()
+   else:
+       ax.clear()
+       ax.plot(x,y, color="red",linestyle="dashed",marker="o"), ax.grid(True)
+       ax.axis([xdat-1000,xdat+1000,ydat-1000,ydat+1000])
+       ax.set_xlabel('$x(cm)$'),ax.set_ylabel('$y(cm)$')
+       ax.set_title('$GPS DATA$')
+       inputtxt.insert(END,int(xdat-1000))
+       inputtxt1.insert(END,int(xdat+1000))
+       inputtxt2.insert(END,int(ydat-1000))
+       inputtxt3.insert(END,int(ydat+1000))
+       line.draw()
+def savegraph():
+    variable=time.strftime("%Y-%m-%d %H %M %S")
+    figure.savefig( r'..\Saved\data' +  str(variable)  + '.png' )
+def plotdata():
+    global y
+    global x
+    txt1=str(txtgirdi.get("1.0", "end-1c"))
+    dizi,dizi1,x,y,="","","",""
+    deneme="1"
+    z,k,i,l,=1,0,0,1
+    enlem1=""
+    boylamson=0.00
+    with open(r"../GPSVERI/" +txt1+".txt","r") as dosya:
+        if z==1:
+            line1=dosya.readlines()
+            for words in line1:
+                l=l+1
+            l=int(l/2)
+            z=0
+            deneme=deneme*l
+            for words in deneme:
+                x=x+words
+                y=y+words
+            x=list(x)
+            y=list(y)
+            z=0       
+    with open(r"../GPSVERI/" +txt1+".txt","r") as dosya:
         line1=dosya.read()        
         cc=line1.split("e")
         for word in cc:
@@ -43,13 +83,13 @@ with open("TARLAs.txt","r") as dosya:
             boylam1=float(boylam1)
             enlem1=float(enlem1)
             enlem1=enlem1*11100000
-            if veri >= 39.00:
+            if veri >= 38.00:
                 enlem=veri
                 enlem=enlem*11100000
                 enlemmesafe=enlem-enlem1
                 x[k]=enlemmesafe
                 k=k+1
-            if veri >= 30.48 and veri <=30.55:
+            if veri >= 30 and veri <=31:
                 boylammesafe=math.cos(enlem1)*11100000
                 boylam=veri
                 boylamson=(boylammesafe*boylam)-(boylammesafe*boylam1)
@@ -57,115 +97,250 @@ with open("TARLAs.txt","r") as dosya:
                 #print(boylamson)
                 y[i]=boylamson
                 i=i+1
-def B0f():
+    intervaltxt.delete("1.0",END)
+    inputtxt.delete("1.0",END)
+    inputtxt1.delete("1.0",END)
+    inputtxt2.delete("1.0",END)
+    inputtxt3.delete("1.0",END)
     ax.clear()
-    ax.plot(x,y), ax.grid(True)
+    ax.plot(x,y, color="red",linestyle="dashed",marker="o"), ax.grid(True)
     ax.set_xlabel('$x(cm)$'),ax.set_ylabel('$y(cm)$')
     ax.set_title('$GPS DATA$')
     line.draw()
-  
+    xmin,xmax,ymin,ymax=ax.axis()
+    xmin=int(xmin)
+    xmax=int(xmax)
+    ymin=int(ymin)
+    ymax=int(ymax)
+    inputtxt.insert(END,xmin)
+    inputtxt1.insert(END,xmax)
+    inputtxt2.insert(END,ymin)
+    inputtxt3.insert(END,ymax)
+    intervaltxt.insert(END,0)
+def slider():
+    inputtxt.delete("1.0",END)
+    inputtxt1.delete("1.0",END)
+    inputtxt2.delete("1.0",END)
+    inputtxt3.delete("1.0",END)
+    xval=int(xvalueslider.get())
+    yval=int(yvalueslider.get())
+    ax.clear()
+    ax.axis([-xval,xval,-yval,yval])
+    ax.plot(x,y, color="red",linestyle="dashed",marker="o"), ax.grid(True)
+    ax.set_xlabel('$x(cm)$'),ax.set_ylabel('$y(cm)$')
+    ax.set_title('$GPS DATA$')
+    line.draw()
+    inputtxt.insert(END,-xval)
+    inputtxt1.insert(END,xval)
+    inputtxt2.insert(END,-yval)
+    inputtxt3.insert(END,yval)
 def Take_input():
     INPUT = int(inputtxt.get("1.0", "end-1c"))
     INPUT1 = int(inputtxt1.get("1.0", "end-1c"))
     INPUT2 = int(inputtxt2.get("1.0", "end-1c"))
     INPUT3 = int(inputtxt3.get("1.0", "end-1c"))
-    Output1.insert(END,"Deneme")
     ax.clear()
     ax.axis([INPUT,INPUT1,INPUT2,INPUT3])
-    ax.plot(x,y), ax.grid(True)
+    ax.plot(x,y, color="red",linestyle="dashed",marker="o"), ax.grid(True)
     ax.set_xlabel('$x(cm)$'),ax.set_ylabel('$y(cm)$')
     ax.set_title('$GPS DATA$')
     line.draw()
-def B2f():
-    ax.clear()
-    ax.axis([-10000,10000,-10000,10000])
-    ax.plot(x,y), ax.grid(True)
-    ax.set_xlabel('$x(cm)$'),ax.set_ylabel('$y(cm)$')
-    ax.set_title('$GPS DATA$')
-    line.draw()
-"""def B3f():
-    x = np.linspace(0,10,100)
-    y = np.exp(x)
-    ax.clear()
-    ax.plot(x,y), ax.grid(True)
-    ax.set_xlabel('$x$'),ax.set_ylabel('y(x)')
-    ax.set_title('$y(x) = e^{x}$')
-    line.draw()   
-def B4f():
-    def gaussian(x, mu, sig):
-        return 1./(np.sqrt(2.*np.pi)*sig)*np.exp(-np.power((x - mu)/sig, 2.)/2)
-    x = np.linspace(0,10,100)
-    y = gaussian(x,5,1.3)
-    ax.clear()
-    ax.plot(x,y), ax.grid(True)
-    ax.set_xlabel('$x$'),ax.set_ylabel('y(x)')
-    ax.set_title('$y(x) = Gaussian(x,5,1.3)$')
-    line.draw()"""
-
-#--- kaynak ---
+def Clear():
+    inputtxt.delete("1.0",END)
+    inputtxt1.delete("1.0",END)
+    inputtxt2.delete("1.0",END)
+    inputtxt3.delete("1.0",END)
+    inputtxt.insert(END,0)
+    inputtxt1.insert(END,0)
+    inputtxt2.insert(END,0)
+    inputtxt3.insert(END,0)
+def xminup():
+    INPUT = int(inputtxt.get("1.0", "end-1c"))
+    INPUT1 = int(inputtxt1.get("1.0", "end-1c"))
+    INPUT2 = int(inputtxt2.get("1.0", "end-1c"))
+    INPUT3 = int(inputtxt3.get("1.0", "end-1c"))
+    ax.axis([INPUT+1000,INPUT1,INPUT2,INPUT3])
+    inputtxt.delete("1.0",END)
+    inputtxt.insert(END,INPUT+1000)
+def xmindown():
+    INPUT = int(inputtxt.get("1.0", "end-1c"))
+    INPUT1 = int(inputtxt1.get("1.0", "end-1c"))
+    INPUT2 = int(inputtxt2.get("1.0", "end-1c"))
+    INPUT3 = int(inputtxt3.get("1.0", "end-1c"))
+    ax.axis([INPUT,INPUT1-1000,INPUT2,INPUT3])
+    inputtxt.delete("1.0",END)
+    inputtxt.insert(END,INPUT-1000) 
+def xmaxup():
+    INPUT = int(inputtxt.get("1.0", "end-1c"))
+    INPUT1 = int(inputtxt1.get("1.0", "end-1c"))
+    INPUT2 = int(inputtxt2.get("1.0", "end-1c"))
+    INPUT3 = int(inputtxt3.get("1.0", "end-1c"))
+    ax.axis([INPUT,INPUT1+1000,INPUT2,INPUT3])
+    inputtxt1.delete("1.0",END)
+    inputtxt1.insert(END,INPUT1+1000)
+def xmaxdown():
+    INPUT = int(inputtxt.get("1.0", "end-1c"))
+    INPUT1 = int(inputtxt1.get("1.0", "end-1c"))
+    INPUT2 = int(inputtxt2.get("1.0", "end-1c"))
+    INPUT3 = int(inputtxt3.get("1.0", "end-1c"))
+    ax.axis([INPUT,INPUT1-1000,INPUT2,INPUT3])
+    inputtxt1.delete("1.0",END)
+    inputtxt1.insert(END,INPUT1-1000) 
+def yminup():
+    INPUT = int(inputtxt.get("1.0", "end-1c"))
+    INPUT1 = int(inputtxt1.get("1.0", "end-1c"))
+    INPUT2 = int(inputtxt2.get("1.0", "end-1c"))
+    INPUT3 = int(inputtxt3.get("1.0", "end-1c"))
+    ax.axis([INPUT,INPUT1,INPUT2-1000,INPUT3])
+    inputtxt2.delete("1.0",END)
+    inputtxt2.insert(END,INPUT2+1000)
+def ymindown():
+    INPUT = int(inputtxt.get("1.0", "end-1c"))
+    INPUT1 = int(inputtxt1.get("1.0", "end-1c"))
+    INPUT2 = int(inputtxt2.get("1.0", "end-1c"))
+    INPUT3 = int(inputtxt3.get("1.0", "end-1c"))
+    ax.axis([INPUT,INPUT1,INPUT2-1000,INPUT3])
+    inputtxt2.delete("1.0",END)
+    inputtxt2.insert(END,INPUT2-1000) 
+def ymaxup():
+    INPUT = int(inputtxt.get("1.0", "end-1c"))
+    INPUT1 = int(inputtxt1.get("1.0", "end-1c"))
+    INPUT2 = int(inputtxt2.get("1.0", "end-1c"))
+    INPUT3 = int(inputtxt3.get("1.0", "end-1c"))
+    ax.axis([INPUT,INPUT1,INPUT2,INPUT3+1000])
+    inputtxt3.delete("1.0",END)
+    inputtxt3.insert(END,INPUT3+1000)
+def ymaxdown():
+    INPUT = int(inputtxt.get("1.0", "end-1c"))
+    INPUT1 = int(inputtxt1.get("1.0", "end-1c"))
+    INPUT2 = int(inputtxt2.get("1.0", "end-1c"))
+    INPUT3 = int(inputtxt3.get("1.0", "end-1c"))
+    ax.axis([INPUT,INPUT1,INPUT2,INPUT3-1000])
+    inputtxt3.delete("1.0",END)
+    inputtxt3.insert(END,INPUT3-1000)
+#--- source ---
 root = tk.Tk()
 root.geometry('1200x900')
 root.title("Tkinter + Matplotlib") 
-#------------
-
-#-- çerçeve ---
+#-- frame ---
 left_frame = tk.Frame(root)
 left_frame.place(relx=0.03, rely=0.05, relwidth=0.25, relheight=0.9)
-
 right_frame = tk.Frame(root, bg='#C0C0C0', bd=1.5)
 right_frame.place(relx=0.3, rely=0.05, relwidth=0.65, relheight=0.9)
 #-----------------
 RH = 0.19
-#-------------ilk textbox--------------------
+#-------------textboxes--------------------
 l = Label(text = "X minimum(cm) ")
-l.place(rely=(0.13 + RH*0.54),relx=0.04,anchor=NW)
+l.place(rely=(0.01 + RH*0.57),relx=0.03,anchor=NW)
 inputtxt = Text(left_frame,
                 bg = "light yellow")
-inputtxt.place(rely=(0.13 + RH*0.57),relx=0,relheight=0.05, relwidth=0.4)
-#-------------ikinci textbox--------------------
+inputtxt.place(rely=(0.01 + RH*0.54),relx=0,relheight=0.05, relwidth=0.3)
+#
 l1 = Label(text = "X maximum(cm) ")
-l1.place(rely=(0.13 + RH*0.54),relx=0.19,anchor=NW)
+l1.place(rely=(0.01 + RH*0.57),relx=0.153,anchor=NW)
 inputtxt1 = tk.Text(left_frame,
                 bg = "light yellow")
-inputtxt1.place(rely=(0.13 + RH*0.57),relx=0.6,relheight=0.05, relwidth=0.4)
-#-------------üçüncü textbox--------------------
+inputtxt1.place(rely=(0.01 + RH*0.54),relx=0.5,relheight=0.05, relwidth=0.3)
+#
 l2 = Label(root,text = "Y minimum(cm)")
-l2.place(rely=(0.22 + RH*0.54),relx=0.04,anchor=NW)
+l2.place(rely=(0.1 + RH*0.54),relx=0.04,anchor=NW)
 inputtxt2 = tk.Text(left_frame,
                 bg = "light yellow")
-inputtxt2.place(rely=(0.23 + RH*0.57),relx=0,relheight=0.05, relwidth=0.4)
-#-------------dördüncü textbox--------------------
+inputtxt2.place(rely=(0.09 + RH*0.57),relx=0,relheight=0.05, relwidth=0.3)
+#
 l3 = Label(root,text = "Y maximum(cm) ")
-l3.place(rely=(0.22 + RH*0.54),relx=0.19,anchor=NW)
+l3.place(rely=(0.1 + RH*0.54),relx=0.153,anchor=NW)
 inputtxt3 = tk.Text(left_frame,
                 bg = "light yellow")
-inputtxt3.place(rely=(0.23 + RH*0.57),relx=0.6,relheight=0.05, relwidth=0.4)
-#---------------------------------------
-Output1 = tk.Text(left_frame,
+inputtxt3.place(rely=(0.09 + RH*0.57),relx=0.5,relheight=0.05, relwidth=0.3)
+#----interval textboxu----
+l4 = Label(text = "Interval(optional)")
+l4.place(rely=2*(0.17 + RH*0.57),relx=0.03,anchor=NW)
+
+l5 = Label(text = "Enter the range value where\nyou want to see the point to click.\nThe number you choose determines\n the x-y distance from the point you click.")
+l5.place(rely=2*(0.173 + RH*0.57),relx=0.11,anchor=NW)
+
+intervaltxt = tk.Text(left_frame,
                 bg = "light yellow")
-Output1.place(rely= 3*(0.1 + RH*0.54) ,relheight=RH, relwidth=1)
+intervaltxt.place(rely=3*(0.09 + RH*0.57),relx=0,relheight=0.05, relwidth=0.3)
+#--- txt seçimi--------
+l6 = Label(text="Choose the folder which\nyou want to plot;")
+l6.place(rely=0.045,relx=0.03,anchor=NW)
+txtgirdi = tk.Text(left_frame,
+                bg = "light yellow")
+txtgirdi.place(rely=0.045,relx=0,relheight=0.025, relwidth=0.44)
+#------Output------
+Output1 = tk.Text(left_frame,
+                bg = "#9EB9D4")
+Output1.place(rely= 3*(0.16 + RH*0.54),relheight=RH, relwidth=1)
+#------- enter ile box değiş----------
+inputtxt.bind('<Return>', lambda e: e.widget.tk_focusNext().focus_set())
+inputtxt1.bind('<Return>', lambda e: e.widget.tk_focusNext().focus_set())
+inputtxt2.bind('<Return>', lambda e: e.widget.tk_focusNext().focus_set())
+inputtxt2.bind('<Return>', lambda e: e.widget.tk_focusNext().focus_set())
 
+#--- buttons ---
+B0 = tk.Button(left_frame,text="Plot The Data",command = plotdata)
+B0.place(relx=0.55,relheight=0.07, relwidth=0.4)
 
-#--- ilk buton ---
-B0 = tk.Button(left_frame,text="Plot The Data",command = B0f)
-B0.place(relheight=RH, relwidth=1)
-#--- ikinci buton ---
 B2 = tk.Button(left_frame,text="Set x-y axis",command = Take_input)
-B2.place(rely= 2*(0.1 + RH*0.54) ,relheight=RH, relwidth=1)
-#--- üçüncü buton ---
-"""B3 = tk.Button(left_frame,text="EXP(x)",command = B3f)
-B3.place(rely= 3*(0.1 + RH*0.54) ,relheight=RH, relwidth=1)"""
-#--- dördüncü buton ---
-"""B4 = tk.Button(left_frame,text="Gaussian(x)",command = B4f)
-B4.place(rely= 4*(0.1 + RH*0.54) ,relheight=RH, relwidth=1)"""
-#------------
+B2.place(rely= 2*(0.03 + RH*0.54) ,relheight=0.07, relwidth=1)
+#--- X buttons ---
+xminupbut = tk.Button(left_frame,text=">",command = xminup)
+xminupbut.place(rely=(0.01 + RH*0.54),relx=0.37,relheight=0.05, relwidth=0.07)
 
-#--- şekil ekleme ---
+xmindownbut = tk.Button(left_frame,text="<",command = xmindown)
+xmindownbut.place(rely=(0.01 + RH*0.54),relx=0.30,relheight=0.05, relwidth=0.07)
+
+xmaxdownbut = tk.Button(left_frame,text="<",command = xmaxdown)
+xmaxdownbut.place(rely=(0.01 + RH*0.54),relx=0.8,relheight=0.05, relwidth=0.07)
+
+xmaxupbut = tk.Button(left_frame,text=">",command = xmaxup)
+xmaxupbut.place(rely=(0.01 + RH*0.54),relx=0.87,relheight=0.05, relwidth=0.07)
+#--- Y buttons ----------
+yminupbut = tk.Button(left_frame,text=">",command = yminup)
+yminupbut.place(rely=(0.09 + RH*0.57),relx=0.37,relheight=0.05, relwidth=0.07)
+
+ymindownbut = tk.Button(left_frame,text="<",command = ymindown)
+ymindownbut.place(rely=(0.09 + RH*0.57),relx=0.30,relheight=0.05, relwidth=0.07)
+
+ymaxdownbut = tk.Button(left_frame,text="<",command = ymaxdown)
+ymaxdownbut.place(rely=(0.09 + RH*0.57),relx=0.8,relheight=0.05, relwidth=0.07)
+
+ymaxupbut = tk.Button(left_frame,text=">",command = ymaxup)
+ymaxupbut.place(rely=(0.09 + RH*0.57),relx=0.87,relheight=0.05, relwidth=0.07)
+
+cleartext=tk.Button(left_frame,text="Clear x-y values",command = Clear)
+cleartext.place(rely= 2*(0.065 + RH*0.54) ,relheight=0.07, relwidth=1)
+
+sliderbutton=tk.Button(left_frame,text="Slider insert",command = slider)
+sliderbutton.place(rely= 1*(0.39 + RH*0.54),relheight=0.07, relwidth=1)
+
+savebutton=tk.Button(left_frame,text="Save",command=savegraph)
+savebutton.place(rely= 1*(0.55 + RH*0.54),relheight=0.05, relwidth=0.18)
+#-----------
+#-----sliders----
+ysliderl = Label(root,text = "Set Y interval")
+ysliderl.place(rely=(0.32 + RH*0.54),relx=0.153,anchor=NW)
+xsliderl = Label(root,text = "Set X interval")
+xsliderl.place(rely=(0.32 + RH*0.54),relx=0.03,anchor=NW)
+xvalueslider=tk.Scale(root,from_=1,to=100000,orient="horizontal")
+xvalueslider.grid(row=1,column=1,padx=35,pady=400)
+yvalueslider=tk.Scale(root,from_=1,to=100000,orient="horizontal")
+yvalueslider.grid(row=1,column=2)
+#---------------
+intervaltxt.insert(END,0)
+inputtxt.insert(END,0)
+inputtxt1.insert(END,0)
+inputtxt2.insert(END,0)
+inputtxt3.insert(END,0)
+#--- adding shapes/mouse events ---
 figure = plt.Figure(figsize=(5,6), dpi=100)
 ax = figure.add_subplot(111)
+cid = figure.canvas.mpl_connect('button_press_event', mouse_event)
 ax.grid(True),ax.set_xlabel('$x$'),ax.set_ylabel('$y(x)$')
 line = FigureCanvasTkAgg(figure, right_frame)
 line.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH,expand=1)
+root.title("GPS DATA MAPPING")
 #----------------------
-
 root.mainloop()
